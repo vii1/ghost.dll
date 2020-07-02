@@ -59,7 +59,7 @@ I may consider adding functionality in the future to enable or disable the libra
 It would be good to have an additional flag to use both, but this would require rewriting the DIV2 graphics engine.
 
 ### Delay when loading palettes
-GHOST.DLL does its work every time you load a new palette. Unfortunately, its algorithm is relatively naive and unoptimized, so **a small delay will be added every time you load a new palette, including the first palette loaded at the start of the game**. It lasts a few seconds, depending on the speed of your machine. Nothing annoying, but keep it in mind when coding your game. DIV2 does a fade-out every time you load a new palette, so this just means that the screen will keep black a few seconds more.
+GHOST.DLL does its work every time you load a new palette. Unfortunately, its algorithm is relatively naive and unoptimized, so **a small delay will be added every time you load a new palette, including the first palette loaded at the start of the game**. It lasts a few seconds, depending on the speed of your machine. Nothing annoying, but keep it in mind when coding your game. DIV2 does a fade-out every time you load a new palette, so this just means that the screen will stay black a few seconds more.
 
 ### Beware of runtime palette modifications
 I haven't tested this DLL with palette rotations or `set_color()`, but be warned they may produce funny results.
