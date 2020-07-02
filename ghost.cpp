@@ -1,20 +1,16 @@
-#include <math.h>
-#include <stdio.h>
-#include <string.h>
-
 #define GLOBALS
 #include "div.h"
 
 typedef unsigned char byte;
 
-// Devuelve el color de la paleta m s pr¢ximo a los valores RGB dados
+// Devuelve el color de la paleta mï¿½s prï¿½ximo a los valores RGB dados
 // OJO, probablemente puede optimizarse
 byte find_color(int r, int g, int b)
 {
   // Cada color es un punto en el cubo de color (0..63,0..63,0..63)
-  // Tenemos un punto arbitrario (rgb) y queremos encontrar el color m s cercano.
+  // Tenemos un punto arbitrario (rgb) y queremos encontrar el color mï¿½s cercano.
   // La distancia es sqrt(dr*dr+dg*dg+db*db).
-  // Podemos prescindir de la ra¡z cuadrada ya que s¢lo queremos comparar distancias.
+  // Podemos prescindir de la raï¿½z cuadrada ya que sï¿½lo queremos comparar distancias.
   byte* pal = (byte*)_palette;
   int dist = 64*64*3;
   byte col = 0, c = 0;
