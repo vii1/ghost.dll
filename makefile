@@ -1,6 +1,6 @@
 all: ghost.dll .SYMBOLIC
 
-ghost.dll: ghost.cpp tab_cuad.h div.h
+ghost.dll: ghost.cpp div.h
 	wcl386 ghost.cpp -ox -s -l=div_dll
 
 .SILENT
