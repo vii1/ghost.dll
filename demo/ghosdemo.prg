@@ -5,9 +5,12 @@ global
 
 private
     a,b,i,j;
+    wri_status;
+    blend = 1;
 
 begin
     set_mode(m640x480);
+    ghost_select(1);
     fpg = load_fpg("ghost.fpg");
     a = new_map(256,256,0,0,0);
     b = new_map(256,256,0,0,0);
@@ -26,9 +29,28 @@ begin
     sprite_rgb(0);
     sprite_rgb(1);
     sprite_rgb(2);
+
+    wri_status = write(0, 1, 450, 6, "Additive blending is: ENABLED");
+    write(0, 1, 460, 6, "Press SPACE to toggle");
+    write(0, 1, 478, 6, "Press ALT+X to exit");
+
     loop
         explosion(rand(100,150), rand(320,370));
         explosion(rand(100,150), rand(320,370));
+
+        if(key(_space))
+            delete_text(wri_status);
+            if(!blend)
+                blend = 1;
+                wri_status = write(0, 1, 450, 6, "Additive blending is: ENABLED");
+            else
+                blend = 0;
+                wri_status = write(0, 1, 450, 6, "Additive blending is: DISABLED");
+            end
+            ghost_select(blend);
+            put(0,a,0,0);
+            xput(0,b,0,0,0,100,4,0);
+        end
         frame;
     end
 end

@@ -5,6 +5,8 @@ give an additive transparency effect to your games.
 
 The project URL is https://github.com/vii1/ghost.dll
 
+![Demo](https://github.com/vii1/ghost.dll/blob/master/demo/ghosdemo.gif)
+
 ## How to use it
 
 Copy the compiled GHOST.DLL to the DLL folder inside your DIV2 installation directory.
@@ -14,7 +16,39 @@ In your game source, add the following line just below your `PROGRAM` statement:
 IMPORT "ghost.dll";
 ```
 
-Now your game will apply additive blending instead of standard transparency whenever you use `flags = 4` in your game.
+And then add the following line wherever you want to activate the effect (p.e. near the start of your game):
+```div
+ghost_select(1);
+```
+
+From then on, your game will apply additive blending instead of standard transparency whenever you use `flags = 4`.
+
+If you want to retain the effect between palette loads, add the following line:
+```div
+ghost_set_auto(1);
+```
+
+See below for a detailed explanation of what each function does.
+
+### Functions provided
+
+* `ghost_select(<mode>)`
+
+  Selects the desired transparency effect and applies it immediately.
+
+  You can select between 2 modes:
+  * **0** : standard transparency (the default in DIV).
+  * **1** : additive blending.
+
+  The selected mode will be active until the next time a new palette is loaded, unless you set automatic mode with `ghost_set_auto()` (see below).
+
+  **WARNING**: every time you use this function, your game will freeze for a few seconds (see **Issues and limitations** below).
+
+* `ghost_set_auto(<flag>)`
+  
+  Enables/disables automatic overwriting of ghost table.
+
+  Whenever a new palette is loaded, DIV generates a new ghost table automatically, which means the transparency will be set to normal. If you want to retain the additive blending effect between palette loads, you can use this function to tell GHOST.DLL to activate the effect every time a new palette is loaded.
 
 ## How to run the demo
 
@@ -22,7 +56,9 @@ Copy GHOSDEMO.PRG to your PRG folder and GHOST.FPG to your FPG folder inside you
 
 At the top left you'll see the current ghost table for reference. The rest of the screen will show you various transparent sprites to demonstrate the effect.
 
-You can comment out the `IMPORT` line and re-run to see the same with standard transparency and compare.
+To compare between the additive and standard blending, press **SPACE** to toggle the additive transparency effect.
+
+You can exit the demo by pressing **ALT+X**.
 
 ## How to compile the DLL
 
@@ -52,14 +88,16 @@ Remember to copy the DLL to your DIV2\DLL subdirectory whenever you compile a ne
 ## Issues and limitations
 
 ### The effect is global
-Whenever you import GHOST.DLL, the global ghost table of the DIV2 runtime will be overwritten. This means that **you lose the capability of using standard transparency**. You can omit the import and use standard transparency, or use the DLL and have additive transparency, **but you can't have both at the same time**.
+Whenever you activate the additive blending effect, the global ghost table of the DIV2 runtime will be overwritten. This means that **you lose the capability of using standard transparency**, at least until you switch back with `ghost_select(0)`.
 
-I may consider adding functionality in the future to enable or disable the library in runtime.
+It would be good to have an additional flag to use both simultaneously, but this would require rewriting the DIV2 graphics engine.
 
-It would be good to have an additional flag to use both, but this would require rewriting the DIV2 graphics engine.
+### Delay when switching the effect
+GHOST.DLL will freeze your game for a few seconds every time you switch between transparency modes. More exactly:
+* Every time you use `ghost_select()`.
+* If you enabled **automatic mode** with `ghost_set_auto()`, every time a new palette is loaded (with `load_pal()`, `load_fpg()`, etc). DIV2 does a fade-out every time you load a new palette, so this just means that the screen will stay black a few seconds more.
 
-### Delay when loading palettes
-GHOST.DLL does its work every time you load a new palette. Unfortunately, its algorithm is relatively naive and unoptimized, so **a small delay will be added every time you load a new palette, including the first palette loaded at the start of the game**. It lasts a few seconds, depending on the speed of your machine. Nothing annoying, but keep it in mind when coding your game. DIV2 does a fade-out every time you load a new palette, so this just means that the screen will stay black a few seconds more.
+Be mindful of this while coding your game, so the freezes don't harm your users' experience. If you use `ghost_select()` to switch between modes, place the call whenever the screen is not expected to change (p.e. a loading screen, between a `fade_off()` and a `fade_on()`, etc).
 
 ### Beware of runtime palette modifications
 I haven't tested this DLL with palette rotations or `set_color()`, but be warned they may produce funny results.
@@ -106,6 +144,8 @@ If you refer to the `ghost.cpp` file, this algorithm is contained in the `find_c
 ### 2020-07-03
 * Added README.
 * Removed `tab_cuad.h` dependency from makefile.
+* Disabled auto mode by default.
+* Added the functions `ghost_select()` and `ghost_set_auto()`.
 
 ### 2020-07-01
 * First version published on GitHub.
